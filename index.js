@@ -330,6 +330,12 @@ let symbol0 = web3.eth.abi.decodeParameters(['string'], symbol)
 let decimal0 = web3.eth.abi.decodeParameters(['uint8'], decimal)
 let dev = receipt.from
 
+ 
+
+// console.log(name["0"])
+// console.log(Object.values(name0)[0])
+
+
    await SaveData(name0,symbol0,decimal0,token,hash,time,dev)
  }
 
@@ -356,13 +362,11 @@ const SaveData = async (name,symbol,decimal,address,hash,time,dev) => {
     console.log("nagsave")
     const Tokens = Moralis.Object.extend("EthTokens");
     const tokens = new Tokens();
-  
-
-    console.log(name["0"])
-    tokens.set("name", name);
-    tokens.set("symbol", symbol);
+ 
+    tokens.set("name", Object.values(name)[0]);
+    tokens.set("symbol", Object.values(symbol)[0]);
     tokens.set("address", address);
-    tokens.set("decimal", decimal);
+    tokens.set("decimal",  Object.values(decimal)[0]);
     tokens.set("hash", hash);
     tokens.set("dev", dev);
     tokens.set("time", time);
