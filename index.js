@@ -192,7 +192,7 @@ app.get("/get",async (request, response) => {
     response.send(arr);
  })
 async function getNewTokens() {
-    console.log("gumana")
+  
 
     var latest =  await web3.eth.getBlock("latest");
     
@@ -216,7 +216,7 @@ async function getNewTokens() {
         topics: [topicAddress]
     }, async function(error, result){
         if (!error) {
-
+          console.log("eth")
             console.log(result);
 
                     let b = result.topics[1]
@@ -254,7 +254,7 @@ async function getNewTokens() {
 }
 
 async function getNewTokensBSC() {
-  console.log("gumana")
+ 
 
   var latest =  await web3bsc.eth.getBlock("latest");
   
@@ -278,7 +278,7 @@ async function getNewTokensBSC() {
       topics: [topicAddress]
   }, async function(error, result){
       if (!error) {
-
+          console.log("bsc")
           console.log(result);
 
                   let b = result.topics[1]
@@ -328,9 +328,7 @@ if(chain=="eth"){
 
  if(token != null) {
 var receipt = await web3s.eth.getTransactionReceipt(hash)
-console.log("1")
 let time = await  web3s.utils.hexToNumber(receipt.timeStamp)
-console.log("2")
 
 
 var name = await web3s.eth.call({ to: token, data:web3s.utils.sha3("name()")});
@@ -339,7 +337,6 @@ var symbol = await web3s.eth.call({ to: token, data:web3s.utils.sha3("symbol()")
 
 var decimal = await web3s.eth.call({ to: token, data:web3s.utils.sha3("decimals()")});
 
-console.log("una")
 
 let name0 = web3s.eth.abi.decodeParameters(['string'], name)
 let symbol0 = web3s.eth.abi.decodeParameters(['string'], symbol)
