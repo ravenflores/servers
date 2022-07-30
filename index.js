@@ -6,7 +6,10 @@ const fetch = (...args) =>
   import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
 const web3 = new Web3('wss://mainnet.infura.io/ws/v3/cc20d2dc52f741a89a21bedbb2116977');
+const web3bsc = new Web3('wss://bsc-mainnet.nodereal.io/ws/v1/64a9df0874fb4a93b9d0a3849de012d3');
+
 const providers = new Web3.providers.HttpProvider( "https://mainnet.infura.io/v3/cc20d2dc52f741a89a21bedbb2116977")
+
 /* import moralis */
 const Moralis = require("moralis/node");
 
@@ -226,7 +229,7 @@ async function getNewTokens() {
                         let hash = result.transactionHash
 
                         try {
-                            let a = await fetchToken(result.address,hash)
+                            let a = await fetchToken(result.address,hash,"eth")
                         }
                         catch(e){
                             console.log(e)
@@ -250,84 +253,97 @@ async function getNewTokens() {
       
 }
 
-async function getTokenDetails(hash) {
-    let results = await fetch('https://graphql.bitquery.io/ide/transaction-data_1', {
-      method: 'POST',
+async function getNewTokensBSC() {
+  console.log("gumana")
+
+  var latest =  await web3bsc.eth.getBlock("latest");
   
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": "BQYtQ4aHaRMYanvQTKixTb2N8ds33Oly"
-      },
-  
-      body: JSON.stringify({
-        query: `{
-            ethereum(network: ethereum) {
-              transfers(
-                amount: {gt: 0}
-                txHash: {is: ${hash}}
-              ) {
-                transaction {
-                  hash
-                }
-                sender {
-                  address
-                }
-                receiver {
-                  address
-                }
-                amount
-                amount_usd: amount(in: USD)
-                currency {
-                  symbol
-                  address
-                }
-                external
-                date {
-                  date
-                }
-                success
-              }
-            }
-          }
-          `
-      })
-    })
-    let characters = await results
-    console.log(characters)
-  }
+  let toB = latest.number
+  let fB  = toB - 1000
+
+  let options = {
+
+      // address: uniswapFactoryAddress,
+      topics: [
+          topicAddress
+      ],
+      limit:5,
+    
+      fromBlock: fB,                //Number || "earliest" || "pending" || "latest"
+      toBlock: '9999999999'
+    };
+    
+    var subscription = web3bsc.eth.subscribe('logs', {
+      // address: '0x123456..',
+      topics: [topicAddress]
+  }, async function(error, result){
+      if (!error) {
+
+          console.log(result);
+
+                  let b = result.topics[1]
+                  let c = result.topics[2]
+           
+                  console.log(b)
+                  if(parseInt(b,16)==0) {
+
+                      
+                      let hash = result.transactionHash
+
+                      try {
+                          let a = await fetchToken(result.address,hash,"bsc")
+                      }
+                      catch(e){
+                          console.log(e)
+                          console.log('next')
+                      }
+                      // console.log(a)
+
+                  }
+                  else {
+                      console.log("wala")
+                  }
+
+      }
+      else{
+          console.log(error)
+      }
+          
+  });
+
+
+    
+}
 
 
 
-async function  fetchToken (token,hash) {
+async function  fetchToken (token,hash,chain) {
+let web3s
+if(chain=="eth"){
+ web3s = new Web3('wss://mainnet.infura.io/ws/v3/cc20d2dc52f741a89a21bedbb2116977');
+}else if(chain=="bsc"){
+ web3s = new Web3('wss://bsc-mainnet.nodereal.io/ws/v1/64a9df0874fb4a93b9d0a3849de012d3');
+}
 
 
  if(token != null) {
-var receipt = await web3.eth.getTransactionReceipt(hash)
+var receipt = await web3s.eth.getTransactionReceipt(hash)
 console.log("1")
-let time = await  web3.utils.hexToNumber(receipt.timeStamp)
+let time = await  web3s.utils.hexToNumber(receipt.timeStamp)
 console.log("2")
-var date = new Date(time * 1000);
-// var hours = date.getHours();
-// var minutes = "0" + date.getMinutes();
-// var seconds = "0" + date.getSeconds();
 
-// let contrac = new web3.eth.Contract(ABI,token)
 
-// let name = await contrac.methods.name().call()
-// let symbol = await contrac.methods.symbol().call()
-// let decimal = await contrac.methods.decimals().call()
+var name = await web3s.eth.call({ to: token, data:web3s.utils.sha3("name()")});
 
-var name = await web3.eth.call({ to: token, data:web3.utils.sha3("name()")});
+var symbol = await web3s.eth.call({ to: token, data:web3s.utils.sha3("symbol()")});
 
-var symbol = await web3.eth.call({ to: token, data:web3.utils.sha3("symbol()")});
-
-var decimal = await web3.eth.call({ to: token, data:web3.utils.sha3("decimals()")});
+var decimal = await web3s.eth.call({ to: token, data:web3s.utils.sha3("decimals()")});
 
 console.log("una")
 
-let name0 = web3.eth.abi.decodeParameters(['string'], name)
-let symbol0 = web3.eth.abi.decodeParameters(['string'], symbol)
-let decimal0 = web3.eth.abi.decodeParameters(['uint8'], decimal)
+let name0 = web3s.eth.abi.decodeParameters(['string'], name)
+let symbol0 = web3s.eth.abi.decodeParameters(['string'], symbol)
+let decimal0 = web3s.eth.abi.decodeParameters(['uint8'], decimal)
 let dev = receipt.from
 
  
@@ -336,7 +352,7 @@ let dev = receipt.from
 // console.log(Object.values(name0)[0])
 
 
-   await SaveData(name0,symbol0,decimal0,token,hash,time,dev)
+   await SaveData(name0,symbol0,decimal0,token,hash,time,dev,chain)
  }
 
  else {
@@ -348,19 +364,17 @@ let dev = receipt.from
 
 
 
-//   fetchToken("0x6456A046A3c427824aE5467cdBeb1967261CC54B","0xcba89a0d013346979ac48f352358fdfce857844d305903e13be2f6b05e9554af",)
-
-
-
- 
-  
-//   getCharacters()
-const SaveData = async (name,symbol,decimal,address,hash,time,dev) => {
+const SaveData = async (name,symbol,decimal,address,hash,time,dev,chain) => {
     await Moralis.start({ serverUrl, appId, masterKey });
   
+    let Tokens = Moralis.Object.extend("EthTokens");
+    if(chain=="eth"){
+      Tokens = Moralis.Object.extend("EthTokens");
+    }else if(chain=="bsc"){
+      Tokens = Moralis.Object.extend("BSCTokens");
+    }
 
     console.log("nagsave")
-    const Tokens = Moralis.Object.extend("EthTokens");
     const tokens = new Tokens();
  
     tokens.set("name", Object.values(name)[0]);
@@ -373,12 +387,11 @@ const SaveData = async (name,symbol,decimal,address,hash,time,dev) => {
   
     await tokens.save();
 
-    console.log("successfully saved")
+    console.log("successfully saved "+chain)
   };
 
+getNewTokensBSC()
 getNewTokens()
-// Start()
-// getTokenDetails("0x8be2947a9626beaebdf4d396ec5a463af43fe587d1dcdba96b31586d810a8ba2")
 
 app.listen(3000, () => {
     console.log("Listen on the port 3000...");
