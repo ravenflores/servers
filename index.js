@@ -332,15 +332,14 @@ let time = await  web3s.utils.hexToNumber(receipt.timeStamp)
 
 
 var name = await web3s.eth.call({ to: token, data:web3s.utils.sha3("name()")});
-
 var symbol = await web3s.eth.call({ to: token, data:web3s.utils.sha3("symbol()")});
-
 var decimal = await web3s.eth.call({ to: token, data:web3s.utils.sha3("decimals()")});
-
+var totalSupply = await web3s.eth.call({ to: token, data:web3s.utils.sha3("totalSupply()")});
 
 let name0 = web3s.eth.abi.decodeParameters(['string'], name)
 let symbol0 = web3s.eth.abi.decodeParameters(['string'], symbol)
 let decimal0 = web3s.eth.abi.decodeParameters(['uint8'], decimal)
+let totalSupply0 = web3s.eth.abi.decodeParameters(['uint256'], totalSupply)
 let dev = receipt.from
 
  
@@ -349,7 +348,7 @@ let dev = receipt.from
 // console.log(Object.values(name0)[0])
 
 
-   await SaveData(name0,symbol0,decimal0,token,hash,time,dev,chain)
+   await SaveData(name0,symbol0,decimal0,token,hash,time,dev,chain,totalSupply0)
  }
 
  else {
@@ -361,14 +360,14 @@ let dev = receipt.from
 
 
 
-const SaveData = async (name,symbol,decimal,address,hash,time,dev,chain) => {
+const SaveData = async (name,symbol,decimal,address,hash,time,dev,chain,totalSupply) => {
     await Moralis.start({ serverUrl, appId, masterKey });
   
-    let Tokens = Moralis.Object.extend("EthTokens");
+    let Tokens = Moralis.Object.extend("TokensETH");
     if(chain=="eth"){
-      Tokens = Moralis.Object.extend("EthTokens");
+      Tokens = Moralis.Object.extend("TokensETH");
     }else if(chain=="bsc"){
-      Tokens = Moralis.Object.extend("BSCTokens");
+      Tokens = Moralis.Object.extend("TokensBSC");
     }
 
     console.log("nagsave")
@@ -378,9 +377,11 @@ const SaveData = async (name,symbol,decimal,address,hash,time,dev,chain) => {
     tokens.set("symbol", Object.values(symbol)[0]);
     tokens.set("address", address);
     tokens.set("decimal",  Object.values(decimal)[0]);
+    tokens.set("totalSupply", Object.values(totalSupply)[0]);
     tokens.set("hash", hash);
     tokens.set("dev", dev);
     tokens.set("time", time);
+ 
   
     await tokens.save();
 
