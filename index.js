@@ -1,14 +1,17 @@
 const express = require("express");
 const app = express();
 const Web3 = require('web3');
+const axios = require('axios')
 const request = require('request');
 const fetch = (...args) =>
   import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
-const web3 = new Web3('wss://mainnet.infura.io/ws/v3/cc20d2dc52f741a89a21bedbb2116977');
-const web3bsc = new Web3('wss://bsc-mainnet.nodereal.io/ws/v1/64a9df0874fb4a93b9d0a3849de012d3');
 
-const providers = new Web3.providers.HttpProvider( "https://mainnet.infura.io/v3/cc20d2dc52f741a89a21bedbb2116977")
+const ethrpc = 'wss://eth-mainnet.nodereal.io/ws/v1/6671f61bc5cd449999ad42d02680ce71'
+const bscrpc = 'wss://bsc-mainnet.nodereal.io/ws/v1/e448860f2d73434ba4761a9b16c18ad0'
+
+const web3 = new Web3(ethrpc);
+const web3bsc = new Web3(bscrpc)
 
 /* import moralis */
 const Moralis = require("moralis/node");
@@ -21,6 +24,28 @@ const masterKey = "hbRYyzi4e6rSe6MFXO1oF6lSTuFImAn7ZsT1PeHV";
 // async function Start() {
 //     await Moralis.start({ serverUrl, appId, masterKey });
 // }
+
+async function fetchmoralistx(tx,chain) {
+ 
+  const url = `https://deep-index.moralis.io/api/v2/transaction/${tx}?chain=${chain}`
+  const data = {
+    a: 10,
+    b: 20,
+  };
+  axios
+    .get(url, {
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json;charset=UTF-8",
+        'X-API-Key' : '7mzEXKwVBRqunkwzoQpga7ykDT0UAsEKGS0qRVRZ8gPCdWTkUTZKVld7vdDXNkrT'
+      },
+    })
+    .then(({data}) => {
+      console.log(data);
+  });
+}
+
+
 
 
 app.get("/", (request, response) => {
@@ -289,7 +314,7 @@ async function getNewTokensBSC() {
 
                       
                       let hash = result.transactionHash
-
+                    //  await  fetchmoralistx(hash,"bsc")
                       try {
                           let a = await fetchToken(result.address,hash,"bsc")
                       }
@@ -320,9 +345,9 @@ async function getNewTokensBSC() {
 async function  fetchToken (token,hash,chain) {
 let web3s
 if(chain=="eth"){
- web3s = new Web3('wss://mainnet.infura.io/ws/v3/cc20d2dc52f741a89a21bedbb2116977');
+ web3s = new Web3(ethrpc);
 }else if(chain=="bsc"){
- web3s = new Web3('wss://bsc-mainnet.nodereal.io/ws/v1/64a9df0874fb4a93b9d0a3849de012d3');
+ web3s = new Web3(bscrpc);
 }
 
 
@@ -358,6 +383,10 @@ let dev = receipt.from
 
   };
 
+  async function getTX(hash) {
+    var receipt = await web3bsc.eth.getTransactionReceipt(hash)
+    console.log(receipt)
+  }
 
 
 const SaveData = async (name,symbol,decimal,address,hash,time,dev,chain,totalSupply) => {
@@ -390,6 +419,7 @@ const SaveData = async (name,symbol,decimal,address,hash,time,dev,chain,totalSup
 
 getNewTokensBSC()
 getNewTokens()
+// getTX("0x864cc96e1f330bf7ae2b946d6bee6665680b9e67f51d2aa2e5bf612558d65d3b")
 
 app.listen(3000, () => {
     console.log("Listen on the port 3000...");
