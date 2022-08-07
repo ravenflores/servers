@@ -424,9 +424,9 @@ const SaveData = async (name,symbol,decimal,address,hash,time,dev,chain,totalSup
   };
 
 // getNewTokensBSC()
-// getNewTokens()
+getNewTokens()
 // getTX("0x864cc96e1f330bf7ae2b946d6bee6665680b9e67f51d2aa2e5bf612558d65d3b")
-fetchToken("0x1610e393c7f137b21d86cbe787013ca90c96e093","0x080bb3dc907664619ac1dcd12dbd2082aa3889ad78cd5c10ce8967280abbfac7","bsc")
+// fetchToken("0x1610e393c7f137b21d86cbe787013ca90c96e093","0x080bb3dc907664619ac1dcd12dbd2082aa3889ad78cd5c10ce8967280abbfac7","bsc")
 app.listen(3000, () => {
     console.log("Listen on the port 3000...");
 });
