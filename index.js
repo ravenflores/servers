@@ -372,8 +372,14 @@ let dev = receipt.from
 // console.log(name["0"])
 // console.log(Object.values(name0)[0])
 
+ if(totalSupply0 != 0) {
+  await SaveData(name0,symbol0,decimal0,token,hash,time,dev,chain,totalSupply0)
+ }else {
+  console.log("token supply invalid")
+ }
 
-   await SaveData(name0,symbol0,decimal0,token,hash,time,dev,chain,totalSupply0)
+
+  
  }
 
  else {
