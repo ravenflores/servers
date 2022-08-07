@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const Web3 = require('web3');
-const axios = require('axios')
+// const axios = require('axios')
 const request = require('request');
 const fetch = (...args) =>
   import('node-fetch').then(({ default: fetch }) => fetch(...args));
@@ -25,25 +25,25 @@ const masterKey = "hbRYyzi4e6rSe6MFXO1oF6lSTuFImAn7ZsT1PeHV";
 //     await Moralis.start({ serverUrl, appId, masterKey });
 // }
 
-async function fetchmoralistx(tx,chain) {
+// async function fetchmoralistx(tx,chain) {
  
-  const url = `https://deep-index.moralis.io/api/v2/transaction/${tx}?chain=${chain}`
-  const data = {
-    a: 10,
-    b: 20,
-  };
-  axios
-    .get(url, {
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json;charset=UTF-8",
-        'X-API-Key' : '7mzEXKwVBRqunkwzoQpga7ykDT0UAsEKGS0qRVRZ8gPCdWTkUTZKVld7vdDXNkrT'
-      },
-    })
-    .then(({data}) => {
-      console.log(data);
-  });
-}
+//   const url = `https://deep-index.moralis.io/api/v2/transaction/${tx}?chain=${chain}`
+//   const data = {
+//     a: 10,
+//     b: 20,
+//   };
+//   axios
+//     .get(url, {
+//       headers: {
+//         Accept: "application/json",
+//         "Content-Type": "application/json;charset=UTF-8",
+//         'X-API-Key' : '7mzEXKwVBRqunkwzoQpga7ykDT0UAsEKGS0qRVRZ8gPCdWTkUTZKVld7vdDXNkrT'
+//       },
+//     })
+//     .then(({data}) => {
+//       console.log(data);
+//   });
+// }
 
 
 
