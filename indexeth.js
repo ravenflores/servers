@@ -31,7 +31,7 @@ const masterKey = "hbRYyzi4e6rSe6MFXO1oF6lSTuFImAn7ZsT1PeHV";
 //   const data = {
 //     a: 10,
 //     b: 20,
-//   };
+//   }; 
 //   axios
 //     .get(url, {
 //       headers: {
@@ -226,20 +226,24 @@ async function getNewTokens() {
 
     let options = {
 
-        // address: uniswapFactoryAddress,
-        topics: [
-            topicAddress
-        ],
-        limit:5,
+      // address: uniswapFactoryAddress,
+      topics: [
+          topicAddress
+      ],
+      clientConfig: {
+        keepalive: true,
+        keepaliveInterval: 60000
+    },
+    reconnect: {
+        auto: true,
+        delay: 5000,
+        maxAttempts: 5,
+        onTimeout: false
+    }
+    
+    };
       
-        fromBlock: fB,                //Number || "earliest" || "pending" || "latest"
-        toBlock: '9999999999'
-      };
-      
-      var subscription = web3.eth.subscribe('logs', {
-        // address: '0x123456..',
-        topics: [topicAddress]
-    }, async function(error, result){
+      var subscription = web3.eth.subscribe('logs', options, async function(error, result){
         if (!error) {
           console.log("eth")
             console.log(result);

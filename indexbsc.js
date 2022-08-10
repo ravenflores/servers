@@ -292,16 +292,20 @@ async function getNewTokensBSC() {
       topics: [
           topicAddress
       ],
-      limit:5,
+      clientConfig: {
+        keepalive: true,
+        keepaliveInterval: 60000
+    },
+    reconnect: {
+        auto: true,
+        delay: 5000,
+        maxAttempts: 5,
+        onTimeout: false
+    }
     
-      fromBlock: fB,                //Number || "earliest" || "pending" || "latest"
-      toBlock: '9999999999'
     };
     
-    var subscription = web3bsc.eth.subscribe('logs', {
-      // address: '0x123456..',
-      topics: [topicAddress]
-  }, async function(error, result){
+    var subscription = web3bsc.eth.subscribe('logs',options, async function(error, result){
       if (!error) {
           console.log("bsc")
           console.log(result);
@@ -314,7 +318,6 @@ async function getNewTokensBSC() {
 
                       
                       let hash = result.transactionHash
-                    //  await  fetchmoralistx(hash,"bsc")
                       try {
                           let a = await fetchToken(result.address,hash,"bsc")
                       }
@@ -322,7 +325,6 @@ async function getNewTokensBSC() {
                           console.log(e)
                           console.log('next')
                       }
-                      // console.log(a)
 
                   }
                   else {
@@ -372,7 +374,7 @@ let dev = receipt.from
 // console.log(name["0"])
 // console.log(Object.values(name0)[0])
 
- if(totalSupply0 != 0) {
+ if(parseInt(totalSupply0) != 0) {
   await SaveData(name0,symbol0,decimal0,token,hash,time,dev,chain,totalSupply0)
  }else {
   console.log("token supply invalid")
