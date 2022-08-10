@@ -7,7 +7,7 @@ const fetch = (...args) =>
   import('node-fetch').then(({ default: fetch }) => fetch(...args));
 
 
-const ethrpc = 'wss://eth-mainnet.nodereal.io/ws/v1/6671f61bc5cd449999ad42d02680ce71'
+const ethrpc = 'wss://mainnet.infura.io/ws/v3/cc20d2dc52f741a89a21bedbb2116977'
 const bscrpc = 'wss://bsc-mainnet.nodereal.io/ws/v1/e448860f2d73434ba4761a9b16c18ad0'
 
 const web3 = new Web3(ethrpc);
